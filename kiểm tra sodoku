@@ -1,0 +1,37 @@
+bool IsValid(int[,] grid, int row, int col, int num) {
+    // Kiểm tra hàng
+    for (int x = 0; x < 9; x++) {
+        if (grid[row, x] == num) return false;
+    }
+
+    // Kiểm tra cột
+    for (int x = 0; x < 9; x++) {
+        if (grid[x, col] == num) return false;
+    }
+
+    // Kiểm tra khối 3x3
+    int startRow = row / 3 * 3, startCol = col / 3 * 3;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (grid[startRow + i, startCol + j] == num) return false;
+        }
+    }
+
+    return true;
+}
+
+bool FillSudoku(int[,] grid, int row, int col) {
+    if (row == 8 && col == 9) return true; // Bảng hoàn chỉnh
+    if (col == 9) { row++; col = 0; }
+
+    if (grid[row, col] != 0) return FillSudoku(grid, row, col + 1); // Ô đã điền
+
+    for (int num = 1; num <= 9; num++) {
+        if (IsValid(grid, row, col, num)) {
+            grid[row, col] = num;
+            if (FillSudoku(grid, row, col + 1)) return true;
+            grid[row, col] = 0; // Quay lui
+        }
+    }
+    return false;
+}
