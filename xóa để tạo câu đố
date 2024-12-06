@@ -1,0 +1,26 @@
+void RemoveNumbers(int[,] grid, int difficulty) {
+    Random rand = new Random();
+    int cellsToRemove = difficulty; // Số lượng ô cần xóa
+    while (cellsToRemove > 0) {
+        int row = rand.Next(0, 9);
+        int col = rand.Next(0, 9);
+
+        if (grid[row, col] != 0) {
+            int temp = grid[row, col];
+            grid[row, col] = 0;
+
+            // Kiểm tra số lượng lời giải
+            if (!HasUniqueSolution(grid)) {
+                grid[row, col] = temp; // Phục hồi
+            } else {
+                cellsToRemove--;
+            }
+        }
+    }
+}
+
+bool HasUniqueSolution(int[,] grid) {
+    // Viết hàm kiểm tra số lượng lời giải
+    // (có thể sử dụng backtracking để đếm số lời giải)
+    return true; // Placeholder
+}
