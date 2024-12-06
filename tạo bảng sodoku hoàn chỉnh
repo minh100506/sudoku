@@ -1,0 +1,129 @@
+using System;
+using System.Collections.Generic;
+
+class SudokuPuzzle
+{
+    static Random rand = new Random();
+
+    static void Main()
+    {
+        int[,] sudokuGrid = new int[9, 9];
+
+        // Tạo bảng Sudoku hoàn chỉnh
+        if (FillSudoku(sudokuGrid, 0, 0))
+        {
+            Console.WriteLine("Bảng Sudoku hoàn chỉnh:");
+            PrintSudoku(sudokuGrid);
+
+            // Xóa 40 số để tạo bài toán
+            RemoveNumbers(sudokuGrid, 40);
+
+            Console.WriteLine("\nBảng Sudoku sau khi xóa 40 số:");
+            PrintSudoku(sudokuGrid);
+        }
+        else
+        {
+            Console.WriteLine("Không thể tạo bảng Sudoku.");
+        }
+    }
+
+    // Hàm xóa 40 số khỏi bảng Sudoku
+    static void RemoveNumbers(int[,] grid, int count)
+    {
+        int removed = 0;
+        while (removed < count)
+        {
+            int row = rand.Next(0, 9);
+            int col = rand.Next(0, 9);
+
+            // Nếu ô này chưa bị xóa
+            if (grid[row, col] != 0)
+            {
+                grid[row, col] = 0; // Xóa số
+                removed++;
+            }
+        }
+    }
+
+    // Kiểm tra xem số 'num' có hợp lệ ở vị trí (row, col) không
+    static bool IsValid(int[,] grid, int row, int col, int num)
+    {
+        // Kiểm tra hàng
+        for (int x = 0; x < 9; x++)
+        {
+            if (grid[row, x] == num) return false;
+        }
+
+        // Kiểm tra cột
+        for (int x = 0; x < 9; x++)
+        {
+            if (grid[x, col] == num) return false;
+        }
+
+        // Kiểm tra khối 3x3
+        int startRow = row / 3 * 3, startCol = col / 3 * 3;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (grid[startRow + i, startCol + j] == num) return false;
+            }
+        }
+
+        return true;
+    }
+
+    // Điền bảng Sudoku hoàn chỉnh bằng thuật toán Backtracking
+    static bool FillSudoku(int[,] grid, int row, int col)
+    {
+        if (row == 8 && col == 9) return true; // Hoàn thành bảng
+        if (col == 9) { row++; col = 0; }
+
+        if (grid[row, col] != 0) return FillSudoku(grid, row, col + 1);
+
+        // Tạo danh sách các số ngẫu nhiên từ 1 đến 9
+        int[] numbers = GenerateRandomNumbers();
+
+        for (int i = 0; i < 9; i++)
+        {
+            int num = numbers[i];
+            if (IsValid(grid, row, col, num))
+            {
+                grid[row, col] = num;
+                if (FillSudoku(grid, row, col + 1)) return true;
+                grid[row, col] = 0; // Quay lui
+            }
+        }
+
+        return false;
+    }
+
+    // Tạo danh sách các số ngẫu nhiên từ 1 đến 9
+    static int[] GenerateRandomNumbers()
+    {
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        for (int i = numbers.Length - 1; i > 0; i--)
+        {
+            int j = rand.Next(0, i + 1);
+            (numbers[i], numbers[j]) = (numbers[j], numbers[i]); // Hoán đổi
+        }
+        return numbers;
+    }
+
+    // Hiển thị bảng Sudoku
+    static void PrintSudoku(int[,] grid)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (i % 3 == 0 && i != 0) Console.WriteLine("------+------+------");
+
+            for (int j = 0; j < 9; j++)
+            {
+                if (j % 3 == 0 && j != 0) Console.Write("|");
+                Console.Write(grid[i, j] == 0 ? "." : grid[i, j].ToString());
+                Console.Write(" ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
